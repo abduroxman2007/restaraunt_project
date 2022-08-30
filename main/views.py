@@ -4,6 +4,8 @@ from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+
 # Create your views here.
 
 def chekorders(request):
@@ -14,21 +16,21 @@ def chekorders(request):
             item.save()
 
 
-
 #                                Branch
 class BranchAPIView(ListCreateAPIView):
     serializer_class = BranchSerializer
-    
+
     def get_queryset(self):
         return Branch.objects.filter(**self.request.GET.dict())
 
 
 class BranchAPIUpdate(RetrieveUpdateDestroyAPIView):
     queryset = Branch.objects.all()
-    serializer_class = BranchSerializer  
+    serializer_class = BranchSerializer
 
 
 #                                Django User
+
 
 class UserAPIView(ListCreateAPIView):
     serializer_class = DjangoUserSerializer
@@ -75,7 +77,6 @@ class FoodsAPIUpdate(RetrieveUpdateDestroyAPIView):
 class TableAPIView(ListCreateAPIView):
     serializer_class = TableSerializer
 
-
     def get_queryset(self):
         return Table.objects.filter(**self.request.GET.dict())
 
@@ -89,7 +90,6 @@ class TableAPIUpdate(RetrieveUpdateDestroyAPIView):
 
 class TableOrderAPIView(ListCreateAPIView):
     serializer_class = TableOrderSerializer
-
 
     def get_queryset(self):
         return TableOrder.objects.filter(**self.request.GET.dict())
@@ -105,7 +105,6 @@ class TableOrderAPIUpdate(RetrieveUpdateDestroyAPIView):
 class OrderFoodAPIView(ListCreateAPIView):
     serializer_class = OrderFoodSerializer
 
-
     def get_queryset(self):
         return OrderFood.objects.filter(**self.request.GET.dict())
 
@@ -114,9 +113,10 @@ class OrderFoodAPIUpdate(RetrieveUpdateDestroyAPIView):
     queryset = OrderFood.objects.all()
     serializer_class = OrderFoodSerializer
 
+
 #                                Reating
 
-class RatingAPIView(ListCreateAPIView):                # ((total*count) + new_total) / count
+class RatingAPIView(ListCreateAPIView):  # ((total*count) + new_total) / count
     serializer_class = RatingSerializer
     permission_classes = [IsAuthenticated]
 
@@ -138,7 +138,7 @@ class RatingAPIView(ListCreateAPIView):                # ((total*count) + new_to
                 rating.save()
 
                 ##################
-    
+
                 rating = Rating.objects.values_list('rating', flat=True)
                 count = Rating.objects.all().count()
                 total = sum(rating)
@@ -148,14 +148,14 @@ class RatingAPIView(ListCreateAPIView):                # ((total*count) + new_to
                 food.save()
 
                 ##################     
-                
+
                 return Response(status=200)
         except:
 
             ##################
             rating = Rating.objects.values_list('rating', flat=True)
             count = Rating.objects.all().count()
-            
+
             total = sum(rating)
             new_rating = total / count
             food = Food.objects.get(id=food)
@@ -165,10 +165,6 @@ class RatingAPIView(ListCreateAPIView):                # ((total*count) + new_to
             return super().post(request, *args, **kwargs)
 
 
-
 class RatingAPIUpdate(RetrieveUpdateDestroyAPIView):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
-
-
-   

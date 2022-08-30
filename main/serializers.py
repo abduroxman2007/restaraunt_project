@@ -1,4 +1,9 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import CharField
+from rest_framework.serializers import Serializer
+
 from .models import *
 
 
@@ -9,6 +14,18 @@ class BranchSerializer(serializers.ModelSerializer):
 
 
 class DjangoUserSerializer(serializers.ModelSerializer):
+
+    def validate_username(self, username):
+        if User.objects.filter(username=username).exists():
+            raise ValidationError('This username already taken')
+
+        return username
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        user = User(**validated_data)
+        user.save()
+        return user
+
     class Meta:
         model = User
         fields = [
@@ -18,6 +35,25 @@ class DjangoUserSerializer(serializers.ModelSerializer):
             'email',
             'password'
         ]
+
+# class RegisterUserSerializer(Serializer):
+#     username = CharField(max_length=255)
+#     password = CharField(max_length=255)
+#
+#     def validate_username(self, username):
+#         if User.objects.filter(username=username).exists():
+#             raise ValidationError('This username already taken')
+#
+#         return username
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password']
+#
+#     def create(self, validated_data):
+#         validated_data['password'] = make_password(validated_data['password'])
+#         user = User(**validated_data)
+#         user.save()
+#         return user
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -74,7 +110,7 @@ class OrderFoodSerializer(serializers.ModelSerializer):
             'table_order',
             'food',
             'count',
-        ]        
+        ]
 
 
 class RatingSerializer(serializers.ModelSerializer):
